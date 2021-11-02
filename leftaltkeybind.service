@@ -1,0 +1,8 @@
+[Unit]
+Description=leftaltkeybind
+[Service]
+ExecStart=/home/glimmer/.config/leftaltkeybind/leftaltkeybind.py
+Restart=always
+RestartSec=10
+[Install]
+WantedBy=multi-user.target

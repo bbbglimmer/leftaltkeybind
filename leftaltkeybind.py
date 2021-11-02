@@ -52,12 +52,14 @@ def add_new_device(devices, inotify):
     new_devices = []
     for event in inotify.read():
         new_device = InputDevice("/dev/input/" + event.name)
-        if is_keyboard_device(new_device) and not in_device_list(new_device.path, devices):
+        if is_keyboard_device(new_device) and not in_device_list(
+                new_device.path, devices):
             try:
                 new_device.grab()
             except IOError:
                 # Ignore errors on new devices
-                print("IOError when grabbing new device: " + str(new_device.name))
+                print("IOError when grabbing new device: " +
+                      str(new_device.name))
                 continue
             devices.append(new_device)
             new_devices.append(new_device)
@@ -90,9 +92,9 @@ def device_filter(devices):
     return keyboards
 
 
-def active_keys_contains_capslock(active_keys):
+def active_keys_contains_leftalt(active_keys):
     try:
-        active_keys.index(ecodes.KEY_CAPSLOCK)
+        active_keys.index(ecodes.KEY_LEFTALT)
         return True
     except ValueError:
         return False
@@ -106,29 +108,40 @@ inotify = INotify()
 inotify.add_watch('/dev/input', flags.CREATE | flags.ATTRIB)
 _input = UInput()
 _mapping_map = {
-    key_code_id(ecodes.KEY_E, ecodes.KEY_CAPSLOCK): [ecodes.KEY_UP],
-    key_code_id(ecodes.KEY_D, ecodes.KEY_CAPSLOCK): [ecodes.KEY_DOWN],
-    key_code_id(ecodes.KEY_S, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFT],
-    key_code_id(ecodes.KEY_F, ecodes.KEY_CAPSLOCK): [ecodes.KEY_RIGHT],
-    key_code_id(ecodes.KEY_I, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_UP],
-    key_code_id(ecodes.KEY_K, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_DOWN],
-    key_code_id(ecodes.KEY_J, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_LEFT],
-    key_code_id(ecodes.KEY_L, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHT],
-    key_code_id(ecodes.KEY_P, ecodes.KEY_CAPSLOCK): [ecodes.KEY_HOME],
-    key_code_id(ecodes.KEY_SEMICOLON, ecodes.KEY_CAPSLOCK): [ecodes.KEY_END],
-    key_code_id(ecodes.KEY_U, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_HOME],
-    key_code_id(ecodes.KEY_O, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_END],
-    key_code_id(ecodes.KEY_ENTER, ecodes.KEY_CAPSLOCK): [ecodes.KEY_END, ecodes.KEY_ENTER],
-    key_code_id(ecodes.KEY_W, ecodes.KEY_CAPSLOCK): [ecodes.KEY_BACKSPACE],
-    key_code_id(ecodes.KEY_R, ecodes.KEY_CAPSLOCK): [ecodes.KEY_DELETE],
-    key_code_id(ecodes.KEY_DOT, ecodes.KEY_CAPSLOCK): [ecodes.KEY_PAGEDOWN],
-    key_code_id(ecodes.KEY_COMMA, ecodes.KEY_CAPSLOCK): [ecodes.KEY_PAGEUP],
-    key_code_id(ecodes.KEY_H, ecodes.KEY_CAPSLOCK): [ecodes.KEY_TAB],
-    key_code_id(ecodes.KEY_BACKSPACE, ecodes.KEY_CAPSLOCK): [ecodes.KEY_END, ecodes.KEY_LEFTSHIFT, ecodes.KEY_HOME,
-                                                             ecodes.KEY_BACKSPACE],
+    key_code_id(ecodes.KEY_K, ecodes.KEY_LEFTALT): [ecodes.KEY_UP],
+    key_code_id(ecodes.KEY_J, ecodes.KEY_LEFTALT): [ecodes.KEY_DOWN],
+    key_code_id(ecodes.KEY_H, ecodes.KEY_LEFTALT): [ecodes.KEY_LEFT],
+    key_code_id(ecodes.KEY_L, ecodes.KEY_LEFTALT): [ecodes.KEY_RIGHT],
+    key_code_id(ecodes.KEY_RIGHTSHIFT, ecodes.KEY_LEFTALT): [ecodes.KEY_CAPSLOCK],
+    key_code_id(ecodes.KEY_ENTER, ecodes.KEY_LEFTALT):
+    [ecodes.KEY_LEFTCTRL, ecodes.KEY_SPACE],
+    key_code_id(ecodes.KEY_U,ecodes.KEY_LEFTALT):
+    [ecodes.KEY_LEFTCTRL,ecodes.KEY_LEFTSHIFT,ecodes.KEY_U],
+    key_code_id(ecodes.KEY_E,ecodes.KEY_LEFTALT):
+    [ecodes.KEY_LEFTCTRL,ecodes.KEY_LEFTSHIFT,ecodes.KEY_E],
+    key_code_id(ecodes.KEY_C,ecodes.KEY_LEFTALT):
+    [ecodes.KEY_LEFTCTRL,ecodes.KEY_LEFTSHIFT,ecodes.KEY_C],
+    key_code_id(ecodes.KEY_V,ecodes.KEY_LEFTALT):
+    [ecodes.KEY_LEFTCTRL,ecodes.KEY_LEFTSHIFT,ecodes.KEY_V],
+    # key_code_id(ecodes.KEY_I, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_UP],
+    # key_code_id(ecodes.KEY_K, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_DOWN],
+    # key_code_id(ecodes.KEY_J, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_LEFT],
+    # key_code_id(ecodes.KEY_L, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHT],
+    # key_code_id(ecodes.KEY_P, ecodes.KEY_CAPSLOCK): [ecodes.KEY_HOME],
+    # key_code_id(ecodes.KEY_SEMICOLON, ecodes.KEY_CAPSLOCK): [ecodes.KEY_END],
+    # key_code_id(ecodes.KEY_U, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_HOME],
+    # key_code_id(ecodes.KEY_O, ecodes.KEY_CAPSLOCK): [ecodes.KEY_LEFTSHIFT, ecodes.KEY_END],
+    # key_code_id(ecodes.KEY_ENTER, ecodes.KEY_CAPSLOCK): [ecodes.KEY_END, ecodes.KEY_ENTER],
+    # key_code_id(ecodes.KEY_W, ecodes.KEY_CAPSLOCK): [ecodes.KEY_BACKSPACE],
+    # key_code_id(ecodes.KEY_R, ecodes.KEY_CAPSLOCK): [ecodes.KEY_DELETE],
+    # key_code_id(ecodes.KEY_DOT, ecodes.KEY_CAPSLOCK): [ecodes.KEY_PAGEDOWN],
+    # key_code_id(ecodes.KEY_COMMA, ecodes.KEY_CAPSLOCK): [ecodes.KEY_PAGEUP],
+    # key_code_id(ecodes.KEY_H, ecodes.KEY_CAPSLOCK): [ecodes.KEY_TAB],
+    # key_code_id(ecodes.KEY_BACKSPACE, ecodes.KEY_CAPSLOCK): [ecodes.KEY_END, ecodes.KEY_LEFTSHIFT, ecodes.KEY_HOME,
+    # ecodes.KEY_BACKSPACE],
 }
 
-capslock_pressed = False
+leftalt_pressed = False
 try:
     while True:
         try:
@@ -139,27 +152,32 @@ try:
                 if isinstance(waitable, InputDevice):
                     for event in waitable.read():
                         if event.type == ecodes.EV_KEY:
-                            active_keys = [str(k) for k in waitable.active_keys()]
-                            if event.code == ecodes.KEY_CAPSLOCK and event.value == 1:
-                                capslock_pressed = True
-                            if event.code == ecodes.KEY_CAPSLOCK and event.value == 2:
-                                capslock_pressed = False
-                            keys = _mapping_map.get('_'.join(active_keys), None)
+                            active_keys = [
+                                str(k) for k in waitable.active_keys()
+                            ]
+                            if event.code == ecodes.KEY_LEFTALT and event.value == 1:
+                                leftalt_pressed = True
+                            if event.code == ecodes.KEY_LEFTALT and event.value == 2:
+                                leftalt_pressed = False
+                            keys = _mapping_map.get('_'.join(active_keys),
+                                                    None)
                             if keys:
-                                capslock_pressed = False
+                                leftalt_pressed = False
                                 send_keys(keys)
-                            elif active_keys_contains_capslock(active_keys):
-                                capslock_pressed = False
-                            elif event.code == ecodes.KEY_CAPSLOCK and event.value == 0 and capslock_pressed:
-                                send_keys([ecodes.KEY_CAPSLOCK])
-                            elif event.code != ecodes.KEY_CAPSLOCK:
+                            elif active_keys_contains_leftalt(active_keys):
+                                leftalt_pressed = False
+                            elif event.code == ecodes.KEY_LEFTALT and event.value == 0 and leftalt_pressed:
+                                send_keys([ecodes.KEY_LEFTALT])
+                            elif event.code != ecodes.KEY_LEFTALT:
                                 send_event(event)
                         else:
                             send_event(event)
                 else:
                     new_devices = add_new_device(devices, inotify)
                     if new_devices:
-                        print("Okay, now enable remapping on the following new device(s):\n")
+                        print(
+                            "Okay, now enable remapping on the following new device(s):\n"
+                        )
                         print_device_list(new_devices)
         except OSError:
             if isinstance(waitable, InputDevice):
